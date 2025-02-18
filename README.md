@@ -1,4 +1,4 @@
-# ComputationalHEP
+# Computational High Energy Physics
 Series of High Energy Physics computational exercises
 
 Run numerical collider experiments with e.g.:
