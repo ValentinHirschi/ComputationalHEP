@@ -1,0 +1,19 @@
+# Install MadGraph
+https://launchpad.net/mg5amcnlo/3.0/3.6.x/+download/MG5_aMC_v3.5.7.tar.gz
+
+# Install symbolica
+python3 -m pip install symbolica
+
+# Install Python MEs plugin for MadGraph
+cd ComputationalHEP/PLUGIN
+git clone git@github.com:ValentinHirschi/MG5aMC_PythonMEs.git
+
+# The matrix elements pushed have been obtained by running:
+./bin/mg5_aMC --mode=MG5aMC_PythonMEs generate_python_mes.mg5
+
+# with:
+> cat generate_python_mes.mg5
+
+generate e+ e- > mu+ mu- / z
+add process e+ e- > e+ e- / z
+output Python ComputationalHEP/CHEP/matrix_elements/epem_lplm
