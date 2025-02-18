@@ -12,4 +12,9 @@ giving:
 Iteration 9: 0.0927061 +- 0.000160708, chi=0.630556
 ```
 
-and `./run.py --help` for details!
+and:
+```bash
+./run.py --help
+```
+
+for details!
