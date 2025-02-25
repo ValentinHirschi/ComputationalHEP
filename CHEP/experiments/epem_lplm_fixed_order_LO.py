@@ -4,6 +4,7 @@ from symbolica import NumericalIntegrator, Sample, RandomNumberGenerator
 from ..phase_space_generators.phase_space_generators import FlatPhaseSpace
 from ..matrix_elements.epem_lplm.processes.all_processes import Matrix_1_epem_mupmum_no_z
 from ..matrix_elements.epem_lplm.model.parameters import ModelParameters
+from CHEP.utils import logger
 
 GEV_TO_PB = 0.389379338e9
 
@@ -58,5 +59,5 @@ def epem_lplm_fixed_order_LO(args: argparse.Namespace):
         avg, err, chi_sq = integrator.update(
             discrete_learning_rate=DISCRETE_LEARNING_RATE,
             continuous_learning_rate=CONTINUOUS_LEARNING_RATE)  # type: ignore # nopep8
-        print(
+        logger.info(
             'Iteration {}: {:.6} +- {:.6}, chi={:.6}'.format(i_iteration, avg, err, chi_sq))
