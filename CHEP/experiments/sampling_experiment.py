@@ -123,15 +123,16 @@ class IntegrandForTest():
 
 def sampling_experiment(args: argparse.Namespace):
 
-    model = ModelInformation(ModelParameters(None))
+    model_params = ModelParameters(None)
+    # Modify below the mass of the resonance
+    # It wil be centered here at 150 GeV
+    model_params.mdl_MZ = 150.
+    # And will have a width of 60 GeV
+    model_params.mdl_WZ = 60.
+    model = ModelInformation(model_params)
     topology = get_topology('2_to_3_s34')
 
     random.seed(args.seed)
-    # Modify below the mass of the resonance
-    # It wil be centered here at 150 GeV
-    model.parameters.mdl_MZ = 150.0
-    # And will have a width of 60 GeV
-    model.parameters.mdl_WZ = 60.0
 
     E_cm = 1000.0
 
@@ -170,7 +171,7 @@ def sampling_experiment(args: argparse.Namespace):
         "Now integrating the phase-space volume with the Single Channel Phase-Space parametrisation")
     (avg, err, chi2) = integrator.integrate(
         integrand=IntegrandForTest(my_SCPS_generator),  # type: ignore # nopep8
-        max_n_iter=1,
+        max_n_iter=3,
         min_error=0.01,
         n_samples_per_iter=10000,
         seed=args.seed,
@@ -191,8 +192,8 @@ def sampling_experiment(args: argparse.Namespace):
         "Now integrating the phase-space volume with the flat phase-space generator")
     (avg, err, chi2) = integrator.integrate(
         integrand=IntegrandForTest(my_flat_PS_generator),  # type: ignore # nopep8
-        max_n_iter=5,
-        min_error=0.01,
+        max_n_iter=3,
+        min_error=0.00,
         n_samples_per_iter=100,
         seed=args.seed,
         show_stats=True,
@@ -246,3 +247,4 @@ def sampling_experiment(args: argparse.Namespace):
     logger.info('>>>>> QUESTION 2: Explain what you see in the four plots, and in particular what is the difference for the weighted histogram.')
     logger.info('')
     plt.show()
+    # plt.savefig("plot.pdf")
