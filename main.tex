@@ -1,0 +1,47 @@
+% !TeX option = --shell-escape
+\documentclass[11pt]{article}
+
+%page borders and line spacing
+\linespread{1.4}
+\usepackage[a4paper, total={6in, 10in}]{geometry}
+
+%custom commands and packages
+\usepackage{tex/preamble/packages}
+\usepackage{tex/preamble/commands}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lfoot{Computational High Energy Physics}
+\rfoot{2025 University of Bern}
+\cfoot{\thepage}
+
+\begin{document}
+\include{tex/chapters/title}
+
+\tableofcontents
+\newpage
+
+
+\section{Introduction}
+
+These notes follow the course `Computational High Energy Physics' offered by Prof. Dr. Valentin Hirschi in 2025 at the University of Bern. It covers theoretical aspects of implementing a numerical collider in an efficient way, as well as a practical component implementing the various pieces required in order to simulate high energy collisions of the likes at CERN.
+
+
+
+\newpage
+
+\section*{Lecture 1: Differential Cross-Sections at Fixed Order
+}
+
+\newpage
+
+\include{tex/chapters/prac1}
+
+\section*{Lecture 2: Phase Space Sampling and Cross-Section Perturbative Expansion}
+
+\include{tex/chapters/prac2}
+
+
+% \bibliographystyle{unsrt}
+% \bibliography{refs}
+\end{document}

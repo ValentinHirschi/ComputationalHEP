@@ -1,0 +1,165 @@
+
+\section*{Practical 1: Installing Ubuntu, MadGraph5, and Testing with Python}
+\addcontentsline{toc}{section}{Practical 1: Installing Ubuntu, MadGraph5, and Testing with Python}
+
+
+\subsection*{Setup}
+To begin with, we will need a working Linux operating system installed on our computer. If you're a Windows user, the easiest way to do this is by using the official Windows  Subsystem for Linux (WSL), where the instructions to install can be found \href{https://learn.microsoft.com/en-us/windows/wsl/install}{here}. Once installed, you should be able to run the program Ubuntu, which will open a command prompt Window which allows you to interact with the copy of Ubuntu now running on your computer.
+
+To test to see if your installation is working, you can run the command \codeinline{ls} to list the contents of the current directory. This will be empty, but should run without errors. You can then make a new folder (directory) named `chep' by running
+\begin{codeenv}
+    mkdir chep
+\end{codeenv}
+If you run \codeinline{ls} again, you should now see this folder in the output. To move into this folder, we can change directory
+\begin{codeenv}
+    cd chep
+\end{codeenv}
+Next, check to make sure Git is installed, by running
+\begin{codeenv}
+    which git
+\end{codeenv}
+This should tell you where your git installation is. If this doesn't work, make sure git is installed.
+If this runs without problem we should be able download the latest version of the course repository by running
+\begin{codeenv}
+    git clone https://github.com/ValentinHirschi/ComputationalHEP.git 
+\end{codeenv}
+and navigate into its directory
+\begin{codeenv}
+    cd ComputationalHEP/  
+\end{codeenv}
+We can run \codeinline{ls} to see the newly downloaded contents. We can also update this repository week by week by using
+\begin{codeenv}
+    git pull
+\end{codeenv}
+
+To edit the code for the course, the simplest way is to use VS Code. To open the repository in VS Code, we can run from the current directory
+\begin{codeenv}
+    code .
+\end{codeenv}
+This should install and open a VS Code window.
+
+Along with our course code, we will also be running MadGraph5. We install this using
+\begin{codeenv}
+     wget https://launchpad.net/mg5amcnlo/3.0/3.6.x/+download/MG5_aMC_v3.5.7.tar.gz
+\end{codeenv}
+We can unpack this tarball using
+\begin{codeenv}
+     tar -xzf MG5_aMC_v3.5.7.tar.gz
+\end{codeenv}
+We should now see the decompressed contents when we run \codeinline{ls}. We can then remove the zipped file, as we no longer need it
+\begin{codeenv}
+     rm -rf MG5_aMC_v3.5.7.tar.gz
+\end{codeenv}
+We will now have a new directory that we can navigate into
+\begin{codeenv}
+     cd MG5_aMC_v3_5_7/
+\end{codeenv}
+
+We will also need few other things installed to get everything to run properly. To ensure this works, first run
+\begin{codeenv}
+   sudo apt-get update
+\end{codeenv}
+and enter your password when prompted. Then, we need to install Fortran
+\begin{codeenv}
+     sudo apt update && sudo apt-get install gfortran
+\end{codeenv}
+and type \codeinline{Y} to proceed. We also need C++ installed, which can be done with
+\begin{codeenv}
+     sudo apt install build-essential
+\end{codeenv}
+
+For our python code that we will run later, we will also need a few packages. Firstly, check \codeinline{python3 --version}, and make sure it is $\geq 3.12$. If not, run
+\begin{codeenv}
+   sudo add-apt-repository ppa:deadsnakes/ppa -y 
+   sudo apt update 
+   sudo apt install -y python3.12 python3.12-venv python3.12-dev 
+   sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1 
+   sudo update-alternatives --config python3
+\end{codeenv}
+To install packages, we need to use \codeinline{pip}. To install this, run
+\begin{codeenv}
+    sudo apt install python3-pip
+    python3 -m ensurepip --upgrade 
+    python3 -m pip install --upgrade pip setuptools
+\end{codeenv}
+Then, we install \codeinline{symbolica}
+\begin{codeenv}
+    pip install symbolica
+\end{codeenv}
+and \codeinline{numpy}
+\begin{codeenv}
+    pip install numpy
+\end{codeenv}
+
+\subsection*{Our First Process in Madgraph}
+Lets try and use Madgraph, and see how it works. To run it, use the command
+\begin{codeenv}
+    ./bin/mg5_aMC
+\end{codeenv}
+You should now see the introduction text for MadGraph5. To see the commands that are part of the package, we can type
+\begin{codeenv}
+    help
+\end{codeenv}
+If you ever get stuck, you can use the \codeinline{help} command to view documentation and instructions.
+Lets try and generate the cross section for a simple process, $e^+e^-\to \mu^+\mu^-$. To do this, we will generate the process:
+\begin{codeenv}
+    generate e+ e- > mu+ mu-
+\end{codeenv}
+The output should say that we have generated one process with two diagrams. These will correspond to scattering via an intermediate photon, and intermediate $Z$ boson. To see these, we can run
+\begin{codeenv}
+    display diagrams ./
+\end{codeenv}
+This  will generate a file with a drawing of the diagrams (you may not be able to open it though on the default Windows installation).
+
+Obviously, if we want to study Quantum Electrodynamics, we don't want to consider the process mediated by the $Z$ boson. We can ignore this process by using instead
+
+\begin{codeenv}
+    generate e+ e- > mu+ mu- / z
+\end{codeenv}
+
+To compute the result, we can firstly output the process
+\begin{codeenv}
+    output
+\end{codeenv}
+and then begin by typing
+\begin{codeenv}
+    launch
+\end{codeenv}
+This will begin running the code. We can choose now to adjust some parameters (we have 60 seconds to decide if we want to do this). We won't adjust any of the first options for now, so enter \codeinline{0}. On the next screen, we would like to edit some run paramters, so enter \codeinline{2}. This will enter an editor window. You can navigate the text using the arrow keys. To edit the text, we enter `insert' mode by pressing \codeinline{i}. To stop editing, press \codeinline{Esc}. To save and exit this screen, type \codeinline{:w} to write your edits, then \codeinline{:q} to exit to the previous screen. 
+
+We would like to make a few edits. 
+
+Firstly, in the Standard Cuts section, we would like to change \codeinline{ptlmax} to \codeinline{-1.0}. This will remove cutoffs. 
+
+We would also like to change the minimum rapidity \codeinline{etalmin} to \codeinline{0.0}.
+
+You can then exit to the previous screen, and run the process by entering \codeinline{0}. This will run and produce a numerical calculation of the cross-section! It should be something like
+\begin{codeenv}
+     Cross-section :   0.09098 +- 4.17e-05 pb
+\end{codeenv}
+
+We can now exit Madgraph by typing
+\begin{codeenv}
+    exit
+\end{codeenv}
+
+\subsection*{Our First Process in Python}
+
+The course code we downloaded contains a Python script that we can use to compute the same process. Lets navigate back up to the project directory with \codeinline{cd ..} to where our python code will be. Lets open again VS Code by typing \codeinline{code .}. Inside the \codeinline{experiments} folder, there is a file called \codeinline{epem_lplm_fixed_order_LO.py}. This is a Python script that implements the same scattering process that we just computed in MadGraph. We will be trying to understand exactly what this code does, and how to modify it to model processes other than leptonic processes $e^+ e^- \to l^+l^-$.
+
+Let's first trying running the code as it is. To see how to do this, we can firstly go back to the terminal, and run
+\begin{codeenv}
+    ./run.py --help
+\end{codeenv}
+This will give us some documentation. It tells us we can run the experiment \codeinline{epem_lplm_fixed_order_LO}. Let's do this
+\begin{codeenv}
+    ./run.py epem_lplm_fixed_order_LO --seed 3
+\end{codeenv}
+Here, for testing purposes, we specify the random number seed to use in order to get the same result each time. You should see the code run for a few iterations and produce a numerical result for the cross-section, for example
+\begin{codeenv}
+    Iteration 9: 0.0927061 +- 0.000160708, chi=0.630556
+\end{codeenv}
+This is quite close to the Madgraph value, but note quite - it lies outside of the uncertainty bounds.
+%Iteration 9: 0.0927061 +- 0.000160708, chi=0.630556
+
+

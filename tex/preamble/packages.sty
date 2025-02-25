@@ -1,0 +1,83 @@
+% \usepackage[utf8]{inputenc}
+%disable for luatex
+
+
+\usepackage{graphicx} % Required for inserting images
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\usepackage{tikz}
+\usepackage{mathrsfs}
+
+% hyperlinks to references... i hate it when papers dont use
+\usepackage{hyperref}
+
+ \usepackage{quiver}
+ \usepackage{mathtools}
+
+\usepackage{marginnote}
+\usepackage{sidenotes}
+
+\usepackage{titlesec}
+
+%underline and italics, eg for definitions
+\newcommand*\ui[1]{\textit{\underline{#1}}}
+
+
+%%%%%%%%%%%%
+% misc
+
+% lets us use custom footers
+\usepackage{fancyhdr}
+
+% This package allows you to easily add epigraphs (short quotes or sayings, often placed at the beginning of chapters or sections).
+\usepackage{epigraph}
+
+%This package is used to include external PDF files in your LaTeX document.
+\usepackage{pdfpages}
+
+%This package allows you to rotate entire pages into landscape orientation.
+\usepackage{lscape}
+
+%Similar to lscape, but it also ensures that the rotated pages are properly rotated when viewed in a PDF reader.
+\usepackage{pdflscape}
+
+
+
+%%%%%%%%%%%
+%physics
+
+% physics dirac notation
+\usepackage{braket} 
+% feynman slash notation
+\usepackage{slashed}
+
+% for adjustbox package
+\usepackage[export]{adjustbox}
+
+\usepackage[bb=dsserif]{mathalpha}
+
+%bb bold numbers
+\usepackage{bm} 
+
+% knot theory, anyons etc for use with tikz
+\usepackage{tex/preamble/braids}
+
+
+
+
+%%%%%%%%%%%%%% 
+%pretty code environments 
+% NEEDS LUATEX!
+\usepackage{minted}
+% \makeatletter
+% \providecommand{\minted@outputdir}{./tex/_minted-output}
+% \makeatother
+\usepackage{fontspec}
+% i haven't added a bold version
+\setmonofont[Path=tex/preamble/,  BoldFont = JuliaMono-Light.ttf]{JuliaMono-Light.ttf}[Scale=MatchLowercase]
+\definecolor{bg}{rgb}{0.9,0.9,0.9}
+\definecolor{bg2}{rgb}{0.95,0.95,0.95}
+\newminted[codeenv]{bash}{xleftmargin=\parindent,linenos, bgcolor=bg}
+\newcommand{\codeinline}[1]{\mintinline[bgcolor=bg2]{bash}{#1}}

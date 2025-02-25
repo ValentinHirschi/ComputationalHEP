@@ -1,0 +1,47 @@
+\section*{Practical 2: Implementing a Phase Space Sampler}
+
+This week we will look at how phase space sampling can be implemented in python. We can begin by updating our repository with 
+\begin{codeenv}
+    git pull
+\end{codeenv}
+Make sure you're in the project directory when running this, else you'll get an error. If things aren't working (because you've done some edits), you can run
+\begin{codeenv}
+    git stash
+\end{codeenv}
+the stash away your changes. You can now \codeinline{git pull} again to get the latest version. You can then resync your changes on top of the new version using \codeinline{git stash apply}.
+In the experiments folder, you should now have a new file in the \codeinline{experiments folder}, \codeinline{sampling_experiment.py}.
+You should now also see that \codeinline{run.py} has been edited with a new case in \codeinline{__main__} for the sampling experiment. If we try and run this now, we might find that we're missing dependencies. To add the missing requirements, we can use the requirements file supplied by the repository:
+\begin{codeenv}
+    python3 -m pip install -r ./CHEP/requirements.txt
+\end{codeenv}
+Lets run it. To see how to use the new code, we can run
+\begin{codeenv}
+    ./run.py sampling_experiment --help
+\end{codeenv}
+This tells us that we have optional run parameters which allows us to specify our random seed. Lets just run the code without a seed. If we wait a moment, we should see some lovely distributions similar to what we have seen in lectures!
+
+Lets try and understand what the code is doing. Firstly, the code picks a model. It then specifies the \codeinline{topology} - this corresponds to an assignment of momenta to our diagram. We have a propagator $p_1-p_5$ (t-channel). We also have an $s-$channel block. This is specified for our particular process in \codeinline{get_topology()}. Inside this function,  we assign momenta 3 to particle ID $-12$ (positron), $12$ (electron), $23$ ()
+$13$ muon. This allows us to encode our graph in terms of relationships between momenta labels and particle types.
+
+We run our numerical collider at centre of mass energy \codeinline{E_cm=1000.0}. 
+How do we choose our sampling? Because we specify our particles, the code knows our masses and particle lifetimes. This gives us the resonances. Since we have three outgoing particles, there are $12$ DOF. But, they're constrained to be on-shell, reducing this to $9$ DOF. Overall momentum conservation gives $4$ more constrained, giving $5$ parameters over which we must integrate.
+\begin{codeenv}
+    s-channels:     3(-12) 4(12) > -1(23)
+and t-channels: 1(11) 5(22) > -2(11), -2(11) -1(23) > -3(-11)
+selected path:  [[0], []]
+\end{codeenv}
+We should also see next an output of 5 different momenta - our 2 incoming and 3 outgoing. We can also see that these generated momenta obey energy conservation - indeed, the sum output should be a very small number ($\sim$e$-12$) due to computer rounding.
+
+Since our supported phase space is compact, we can actually integrate with our phase space measure to find the phase space volume.
+
+We can see exactly how good our integration is over many iterations. We can see that there is quite a lot of variation between iteration.
+
+However, running the flat space integration gives us a basically constant result. Why is this? Well, the Jacobean of flat space is simply $1/\text{Vol}$. So its no suprise that it integrates very easily - it doesn't have to do anything fancy with the metric.
+
+Loop over n samples. getPSpoint. compute $p_2+p_3 ^2$. This is plotted.
+
+We have 4 plots. One the top row is flat. The left is single channel.
+The RHS is weighted by the Jacobean. Unsurprsiinlg flat has constant jacobean, so the upper right is same us upper left. The particular combination of directions in not uniform, even though the momentum is uniformly sampled. For the single channel phase space, the distribution is very narrowly distributed to 91GeV. Multiplying but the weight, we should get the same distribution as the top right in the bottom right - or atleast we would if we had enough statistics.
+
+
+We can do this using Symbolica.
