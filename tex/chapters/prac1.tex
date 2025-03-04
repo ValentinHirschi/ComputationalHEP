@@ -129,13 +129,15 @@ This will begin running the code. We can choose now to adjust some parameters (w
 
 We would like to make a few edits. 
 
-Firstly, in the Standard Cuts section, we would like to change \codeinline{ptlmax} to \codeinline{-1.0}. This will remove cutoffs. 
+Firstly, in the Standard Cuts section, we would like to remove the cutoffs. We should set also \codeinline{ptl}, the minimum, to \codeinline{0.0}.
 
-We would also like to change the minimum rapidity \codeinline{etalmin} to \codeinline{0.0}.
+We would also like to set the remove the upper bound on rapidity by setting \codeinline{etal} to \codeinline{-1}.
+
+We will also remove the minimum distance between leptons by setting \codeinline{drll} to \codeinline{0.0}.
 
 You can then exit to the previous screen, and run the process by entering \codeinline{0}. This will run and produce a numerical calculation of the cross-section! It should be something like
 \begin{codeenv}
-     Cross-section :   0.09098 +- 4.17e-05 pb
+     Cross-section :   0.09286 +- 2.585e-05 pb
 \end{codeenv}
 
 We can now exit Madgraph by typing
@@ -159,7 +161,7 @@ Here, for testing purposes, we specify the random number seed to use in order to
 \begin{codeenv}
      Iteration 9: 0.0929257 +- 0.000163142, chi=1.1246
 \end{codeenv}
-This is quite close to the Madgraph value, but note quite - it lies outside of the uncertainty bounds.
+This is quite close to the Madgraph value, indeed they lie within each others uncertainty bounds.
 %Iteration 9: 0.0927061 +- 0.000160708, chi=0.630556
 
 
