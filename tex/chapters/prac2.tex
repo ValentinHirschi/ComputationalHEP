@@ -55,7 +55,7 @@ Lets try and understand what we're looking at, and what the code is doing. Lets 
 \end{tikzpicture}
 \end{center}
 
-We have a propagator $p_1-p_5$ (t-channel). We also have an $s-$channel block. This is specified for our particular process in \codeinline{get_topology()}. You can \codeinline{Ctrl+Click} on  \codeinline{get_topology()} to see the assignment explicitly. Inside this function, for the outgoing $s-$channel,  we assign momentum 3 to particle ID $-12$ ($\mu^+$), momentum 4 to $12$ ($\mu^-$), and -1 to $23$ (Z boson). For the $t-$channel, we assign momentum 1 to ID $11$ (positron), $5$ to ID $22$ (photon), and $-2$ to the virtual electron. These two channels are joined by the incoming electron vertex, which we assign momentum $p_{-3}$.
+We have a propagator with momentum $p_1-p_5$ (t-channel). We also have an $s-$channel block. This is specified for our particular process in \codeinline{get_topology()}. You can \codeinline{Ctrl+Click} on  \codeinline{get_topology()} to see the assignment explicitly. Inside this function, for the outgoing $s-$channel,  we assign momentum 3 to particle ID $-12$ ($\mu^+$), momentum 4 to $12$ ($\mu^-$), and -1 to $23$ (Z boson). For the $t-$channel, we assign momentum 1 to ID $11$ (positron), $5$ to ID $22$ (photon), and $-2$ to the virtual electron. These two channels are joined by the incoming electron vertex, which we assign momentum $p_{-3}$.
 
 This allows us to encode our graph in terms of relationships between momenta labels and particle types.
 
