@@ -82,6 +82,7 @@ class ModelParameters(object):
         mdl_cw__exp__2 = mdl_cw**2
 
         # Computing independent couplings
+        GC_1 = -(mdl_ee*mdl_complexi)/3.
         GC_3 = -(mdl_ee*mdl_complexi)
 
         # Computing dependent parameters
@@ -90,7 +91,7 @@ class ModelParameters(object):
         mdl_G__exp__2 = G**2
 
         # Computing independent parameters
-
+        GC_11 = mdl_complexi*G
 
         # Setting independent parameters
         # Model parameters independent of aS
@@ -151,11 +152,12 @@ class ModelParameters(object):
 
         # Setting dependent parameters
         # Model couplings independent of aS
+        self.GC_1 = complex(GC_1)
         self.GC_3 = complex(GC_3)
 
         # Setting independent parameters
         # Model couplings dependent on aS
-
+        self.GC_11 = complex(GC_11)
 
     def __str__(self):
         """ Print all parameters contained in this model."""
@@ -218,6 +220,7 @@ class ModelParameters(object):
         res.append('Independent couplings:')
         res.append('----------------------')
         res.append('')
+        res.append('{:<20s} = {:<20.16e}'.format('GC_1',self.GC_1))
         res.append('{:<20s} = {:<20.16e}'.format('GC_3',self.GC_3))
 
         res.append('')
@@ -232,7 +235,7 @@ class ModelParameters(object):
         res.append('Dependent couplings:')
         res.append('--------------------')
         res.append('')
-
+        res.append('{:<20s} = {:<20.16e}'.format('GC_11',self.GC_11))
 
         res.append('')
 

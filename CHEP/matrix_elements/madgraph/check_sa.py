@@ -21,7 +21,7 @@ class Colour:
 
 module_name = os.path.basename(os.path.dirname(os.path.realpath( __file__ )))
 
-all_process_classes = [Matrix_2_epem_epem_no_z, Matrix_1_epem_mupmum_no_z]
+all_process_classes = [Matrix_2_epem_epem_no_z, Matrix_3_epem_ddxg_no_z, Matrix_1_epem_mupmum_no_z]
 
 # For now, the feature of specifying an SLHA param card to initialise
 # the value of independent parameters is not supported yet.

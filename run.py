@@ -2,8 +2,8 @@
 import argparse
 from CHEP.experiments.epem_lplm_fixed_order_LO import epem_lplm_fixed_order_LO
 from CHEP.experiments.sampling_experiment import sampling_experiment
+from CHEP.experiments.rratio import rratio, rratio_analyze_events
 from CHEP.utils import logger, CHEPException, setup_logging
-
 
 parser = argparse.ArgumentParser(prog='CHEP')
 subparsers = parser.add_subparsers(
@@ -26,6 +26,20 @@ parser_sampling_experiment = subparsers.add_parser(
 parser_sampling_experiment.add_argument('--seed', '-s', type=int, default=0,
                                         help='Random number generator seed')
 
+# Create the parser for the "sampling_experiment" experiment
+parser_rratio_experiment = subparsers.add_parser(
+    'rratio', help='Compute the R-ratio.')
+parser_rratio_experiment.add_argument('--n_iterations', '-ni', type=int, default=10,
+                                      help='Number of iterations to run')
+parser_rratio_experiment.add_argument('--n_points_per_iteration', '-npi', type=int, default=1000,
+                                      help='Number of points per iteration to consider ')
+parser_rratio_experiment.add_argument('--seed', '-s', type=int, default=0,
+                                      help='Random number generator seed')
+
+parser_rratio_analyze_events_experiment = subparsers.add_parser(
+    'rratio_analyze_events', help='Analyze madgraph events to compute differential R-ratio quantities.')
+parser_rratio_analyze_events_experiment.add_argument('--event_file', '-ef', type=str, default=None,
+                                                     help='Specify the path to the madgraph event file to analyze')
 
 if __name__ == "__main__":
 
@@ -42,6 +56,12 @@ if __name__ == "__main__":
 
         case 'sampling_experiment':
             sampling_experiment(args)
+
+        case 'rratio':
+            rratio(args)
+
+        case 'rratio_analyze_events':
+            rratio_analyze_events(args)
 
         case _:
             raise CHEPException(

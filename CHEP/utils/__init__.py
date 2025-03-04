@@ -2,7 +2,7 @@ from enum import StrEnum
 import logging
 import numpy as np
 import random
-from CHEP.matrix_elements.epem_lplm.model.parameters import ModelParameters
+from CHEP.matrix_elements.madgraph.model.parameters import ModelParameters
 
 
 class CHEPException(BaseException):

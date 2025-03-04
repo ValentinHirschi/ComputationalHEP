@@ -4,7 +4,7 @@ import random
 import math
 import matplotlib.pyplot as plt
 from symbolica import NumericalIntegrator, Sample
-from CHEP.matrix_elements.epem_lplm.model.parameters import ModelParameters
+from CHEP.matrix_elements.madgraph.model.parameters import ModelParameters
 from CHEP.phase_space_generators.multi_channel_phase_space_generator import SingleChannelPhasespace
 from CHEP.phase_space_generators.phase_space_generators import FlatPhaseSpace
 from CHEP.utils import logger, ModelInformation

@@ -2,8 +2,8 @@ import argparse
 import math
 from symbolica import NumericalIntegrator, Sample, RandomNumberGenerator
 from ..phase_space_generators.phase_space_generators import FlatPhaseSpace
-from ..matrix_elements.epem_lplm.processes.all_processes import Matrix_1_epem_mupmum_no_z
-from ..matrix_elements.epem_lplm.model.parameters import ModelParameters
+from ..matrix_elements.madgraph.processes.all_processes import Matrix_1_epem_mupmum_no_z
+from ..matrix_elements.madgraph.model.parameters import ModelParameters
 from CHEP.utils import logger
 
 GEV_TO_PB = 0.389379338e9
