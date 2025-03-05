@@ -1,2 +1,110 @@
 \section*{Practical 3: Computing the R Ratio, Part I - IR Regularisation }
 \addcontentsline{toc}{section}{Practical 3: Computing the R Ratio, Part I - IR Regularisation}
+
+Today we will compute a similar process as our first prac where we computed $e+ e-\to \mu+\mu-$. This time, we will now compute $e+e-\to d\bar{d}g$. This is slightly more complicated. Recall that we care about this process as it forms the numerator of the $R$ ratio which tells us important information about charges and colours of quarks. Since we have an outgoing gluon state, things are more subtle as we can now have soft and colinear divergences, in other words, infrared problems. 
+
+We won't be able to compute the full cross-section due to the singularities, and we won't do the higher order corrections yet that are needed for a meaningful result.
+
+So, how can we handle this process to leading order? We have to perform some cut of phase space to avoid the singularities. The range of accepted phase space is known as the fiducial volume. We can then look inside this region and explore different distributions, like we did in the last practical. In this way, we obtain a histogram for the cross section, similar to what we'd get in a real experiment.
+
+% Physically, in an experiment, we can choose to measure processes that have well defined jets.
+
+We'll look at the well-resolved limit of the process. To get a feel for this, we'll compute the result in MadGraph, and then in Python.
+
+Lets open VSCode. In \codeinline{run.py} we should see a new R-ratio experiment. This involves a new method \codeinline{rratio()}. Lets take a look at this method.
+
+ow do we generate the matrix elements? (see madgraph)
+
+We have 5 calls to generate thee wavefunctions for the outgoing particles, then 3 for building the final result (stitching them at the vertices). Since we have two diagrams, they have common components that we dont need to compute twice. Thus, we can same some time as we don't need to recompute from scratch: we just have to compute a different subpart. This would be difficult to do analytically.
+
+This is all captured by the \codeinline{process} variable. 
+
+We then generate the phase space, which in this can we still to flat phase space.
+
+We can then numerically integrate (vegas??). This is an adaptive integrator. W
+
+hat is the integrand?
+
+This time, we generate a phase space point, compute the smatrix, then evaluate weighted by the Jacobian and add to our evaluation. 
+
+However, now we have our fiducial cuts. We have \codeinline{pass_cuts()}. This takes an event and decides if this is a configuration we want to consider.  As you can see in this method, we explicitly compute the cosine to see if the point is within our bounds. Note that our objected are encoded as Lorentz vectors: operations like the dot product automatically respect the Minkowski metric. We also reject points that are below our gluon cut which we have set to \codeinline{50.0}.
+
+
+If we don't pass the cut, we dont bother computing the matrix element. This makes our code a little more efficient.
+
+If we run this code, we should see a result for the cross section which is not divergent. If we make our cutoffs smaller, we should see that our cross-section becomes bigger. Indeed, we saw via our regularisation calculations that the divergence is logarithmic.
+
+We'd like to compare this to MadGraph. Note that MadGraph usually computes proton collisions, not electrons. Thus the cuts by default are slightly different.
+
+Let's generate the event
+\begin{codeenv}
+    generate e+ e- > d d~ g / z
+\end{codeenv}
+Lets output
+\begin{codeenv}
+   output quicktest
+\end{codeenv}
+and launch
+\begin{codeenv}
+    launch
+\end{codeenv}
+
+ True = fixed_ren_scale 
+
+ important ptj, etaj, drjj - when deltar becomes small amgle is small
+
+   Cross-section :   0.02761 +- 0.0001198 pb
+
+   this is much smaller than our python cross section. why? our cuts were much more restrictive.
+
+   What we should do is try and plot the cross section distribution.
+
+   We can navigate to folder  unweighted_events.lhe.gz to see all the exact events we generated. This is events produced in same way as nature
+
+    gunzip  unweighted_events.lhe.gz
+
+   vim unweighted_events.lhe
+ lhe les houches
+ 
+   You can in theory plot all of these events in a histogram. However, the subtly is parsing the format. We can use the madgraph parser to do this.
+
+
+
+   stub   rratio_analyze_events(args)
+
+   lhe_parser
+
+   we can use the parser to import all the data we just generated
+
+   this should print the data points from madpgrah.
+
+   We read the event, parsed, and displayed. The CHEPEventFile is an iterator, we can loop over it. This spits out one event at a time - just like a collider!
+
+   We can also get all the data at once.
+
+   One important this is get_momenta.
+
+   print(type(event))
+
+
+   madgraph/various/lhe_parser
+   Event class -> list. 
+
+   Particle. options and atributes. px py pz pe. 
+
+   rpint(event[0]/px) for exmaple.
+
+   Unweighted event file. Same weight, may not be 1.
+
+   This is similar to the integrand. We can code the anylsis once, take the event file from madgraph, or from events from our integrator. it receives from either source. one thing for all analysis, 
+
+   we can also generate an event file. integrand to write to file so our generated events are saved as same as MG
+
+   1. play with cuts
+
+   2. differntial observables - eg ??
+
+   Paper event shape. They do NLO to born 2->3. They do one loop (gluon) on 3. Dim reg etc. 
+   One observable is C observable (event shape) theta^ij. Take all partons, compute spatialmom. Diagonalise, get the eigs. These eigs are spread of event shape. Physically spread of our particles. Thus we see the scattering shape. Very interesting for NLO correction and how the shape changes.
+
+   
