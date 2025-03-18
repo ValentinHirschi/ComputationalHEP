@@ -6,11 +6,12 @@ from CHEP.utils.vectors import LorentzVector
 from CHEP.matrix_elements.madgraph.processes.all_processes import Matrix_3_epem_ddxg_no_z
 from CHEP.matrix_elements.madgraph.model.parameters import ModelParameters
 from CHEP.utils import logger
+from CHEP.utils.lhe_parser import CHEPEventFile, CHEPEvent
 
 GEV_TO_PB = 0.389379338e9
 
 COSTHETA_CUT = 0.1
-GLUON_ENERGY_CUT = 50.0
+GLUON_ENERGY_CUT = 300.0
 
 
 def pass_cuts(event):
@@ -83,8 +84,3 @@ def rratio(args: argparse.Namespace):
             continuous_learning_rate=CONTINUOUS_LEARNING_RATE)  # type: ignore # nopep8
         logger.info(
             'Iteration {}: {:.6} +- {:.6}, chi={:.6}'.format(i_iteration, avg, err, chi_sq))
-
-
-def rratio_analyze_events(args: argparse.Namespace):
-    from CHEP.utils import lhe_parser
-    logger.info('TODO ANALYZE MADGRAPH EVENTS')

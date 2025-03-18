@@ -1,0 +1,37 @@
+# Uncomment the line below to skip this analysis altogether
+import ../models/sm
+import ./epem_ddxg.lhe as weightedEvents
+import ./unweighted_epem_ddxg.lhe as unweightedEvents
+
+set main.graphic_render = matplotlib
+
+# Histogram drawer (options: matplotlib or root)
+set main.graphic_render = matplotlib
+set main.stacking_method = superimpose
+set weightedEvents.backcolor = none
+set unweightedEvents.backcolor = none
+
+#import /Users/vjhirsch/MG5/MG5_aMC_v3_5_7/models/sm
+#import /Users/vjhirsch/MG5/MG5_aMC_v3_5_7/CHEP_cross_check_epem_mupmum/Events/run_02/unweighted_events.lhe.gz as myevents
+
+# Global event variables
+plot THT   40 0 500 [logY]
+plot MET   40 0 500 [logY]
+plot SQRTS 40 0 1000 [logY]
+# PT and ETA distributions of all particles
+plot  PT(d~[1]) 40 0  500 [logY]
+plot ETA(d~[1]) 40 -10 10 [logY]
+plot  PT(g[1]) 40 0  500 [logY]
+plot ETA(g[1]) 40 -10 10 [logY]
+plot  PT(d[1]) 40 0  500 [logY]
+plot ETA(d[1]) 40 -10 10 [logY]
+# Invariant-mass distributions
+plot M(d~[1] d[1]) 40 0  500 [logY ]
+plot M(d~[1] g[1]) 40 0  500 [logY ]
+plot M(d~[1] g[1] d[1]) 40 0  500 [logY ]
+plot M(g[1] d[1]) 40 0  500 [logY ]
+# Angular distributions
+plot THETA( g[1] ) 200 -1 1 [ logY ]
+!rm -rf epem_ddxg_analysis
+submit epem_ddxg_analysis
+open epem_ddxg_analysis/Output/PDF/MadAnalysis5job_0

@@ -4,6 +4,10 @@ import numpy as np
 import random
 from CHEP.matrix_elements.madgraph.model.parameters import ModelParameters
 
+import os
+CHEP_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.pardir, os.path.pardir))  # nopep8
+CHEP_TEMPLATES = os.path.join(CHEP_ROOT, 'CHEP', 'templates')  # nopep8
+
 
 class CHEPException(BaseException):
     pass

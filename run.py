@@ -2,9 +2,8 @@
 import argparse
 from CHEP.experiments.epem_lplm_fixed_order_LO import epem_lplm_fixed_order_LO
 from CHEP.experiments.sampling_experiment import sampling_experiment
-from CHEP.experiments.rratio import rratio, rratio_analyze_events
-# from CHEP.experiments.rratio import rratio_differential
-from CHEP.experiments.rratio_histogram import rratio_histogram
+from CHEP.experiments.rratio import rratio
+from CHEP.experiments.rratio_differential import rratio_differential
 
 from CHEP.utils import logger, CHEPException, setup_logging
 
@@ -38,16 +37,16 @@ parser_rratio_experiment.add_argument('--n_points_per_iteration', '-npi', type=i
 parser_rratio_experiment.add_argument('--seed', '-s', type=int, default=0,
                                       help='Random number generator seed')
 
-parser_rratio_histogram_experiment = subparsers.add_parser(
-    'rratio_histogram', help='Compute a histogram for the differential R-ratio.')
-parser_rratio_histogram_experiment.add_argument('--n_iterations', '-ni', type=int, default=10,
-                                                help='Number of iterations to run')
-parser_rratio_histogram_experiment.add_argument('--n_points_per_iteration', '-npi', type=int, default=1000,
-                                                help='Number of points per iteration to consider ')
-parser_rratio_histogram_experiment.add_argument('--seed', '-s', type=int, default=0,
-                                                help='Random number generator seed')
-parser_rratio_histogram_experiment.add_argument('--event_file', '-ef', type=str, default='rratio_differential_events.lhe.gz',
-                                                help='Specify the path to the event file to write into.')
+parser_rratio_differential_experiment = subparsers.add_parser(
+    'rratio_differential', help='Generate events and distributions for the differential R-ratio.')
+parser_rratio_differential_experiment.add_argument('--n_iterations', '-ni', type=int, default=10,
+                                                   help='Number of iterations to run')
+parser_rratio_differential_experiment.add_argument('--n_points_per_iteration', '-npi', type=int, default=1000,
+                                                   help='Number of points per iteration to consider ')
+parser_rratio_differential_experiment.add_argument('--seed', '-s', type=int, default=0,
+                                                   help='Random number generator seed')
+parser_rratio_differential_experiment.add_argument('--event_file', '-ef', type=str, default='rratio_differential_events.lhe.gz',
+                                                   help='Specify the path to the event file to write into.')
 
 parser_rratio_analyze_events_experiment = subparsers.add_parser(
     'rratio_analyze_events', help='Analyze madgraph events to compute differential R-ratio quantities.')
@@ -73,11 +72,8 @@ if __name__ == "__main__":
         case 'rratio':
             rratio(args)
 
-        case 'rratio_analyze_events':
-            rratio_analyze_events(args)
-
-        case 'rratio_histogram':
-            rratio_histogram(args)
+        case 'rratio_differential':
+            rratio_differential(args)
 
         case _:
             raise CHEPException(
