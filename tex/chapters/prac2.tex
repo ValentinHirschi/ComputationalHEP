@@ -20,7 +20,10 @@ Lets run the new experiment. To see how to use the new code, we can run
 \begin{codeenv}
     python3 run.py sampling_experiment --help
 \end{codeenv}
-This tells us that we have optional run parameters which allows us to specify our random seed. Lets just run the code without a seed. If we wait a moment, we should see some lovely distributions similar to what we have seen in lectures!
+This tells us that we have optional run parameters which allows us to specify our random seed. Lets just run the code without a seed. If we wait a moment, we should see some lovely distributions similar to what we have seen in lectures! If the plots don't show (\codeinline{* UserWarning: FigureCanvasAgg is non-interactive}), try running 
+\begin{codeenv}
+    sudo apt-get install python3-tk
+\end{codeenv}
 
 \begin{figure}[H]
     \centering
