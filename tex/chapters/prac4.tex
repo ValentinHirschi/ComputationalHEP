@@ -1,0 +1,51 @@
+\section*{Practical 4: Computing the R Ratio, II - Angular Distribution }
+
+For this practical, your task will be to implement the remaining code to reproduce some results for the $e^+e^-\to q\bar{q}g$. Particularly, we would like to reproduce the real emission plot - the distribution of events with respect to angle. Recall that at leading order, with no gluon emission, we expect the relative angle between quarks to be $\pi$: they should scatter in opposite directions. As we introduce gluons if we allow gluons in our final state, the angle will be slightly reduced as the gluon will carry some of the momentum. As the gluon becomes soft, the angle will restore to $\pi$. We would like to see the exact distribution of angles after implementing a soft cut. 
+
+
+% We bin the angle into 100 bins from $[-1,1]$ $(\cos(\theta)$).
+
+Create a new file for our experiment, \codeinline{rratio_differential.py}. We rename the function to \codeinline{rratio_differential}. In \codeinline{run.py}, add this experiment to the cases, as well as the appropriate code to the parser. We will also need to import the file so that \codeinline{run.py} knows where to find our code,
+\begin{codeenv}
+    from CHEP.experiments.rratio_differential import rratio_differenital
+\end{codeenv}
+
+We would like to plot a histogram. How do we gather the data we need for plotting? If we look inside our integrand function, we can see the where we generate our data and add to our evaluations. This is where we can start gathering angular data. The simplest way is to add a new argument to our integrand function, which allows it to take an array as input. Note that one should take care when doing this: when we pass an object into a method, depending on the coding language, it can either be a reference to the object's location in memory or copy? If it were a copy, the object will only be modified in the scope of the method, and our original object will be unmodified. This isn't good if we're trying to store data. We want reference for the histogram. This is the default in python - exactly what we want. However, if we want to parallelise, this would make things more difficult as the code would try and modify our array concurrently - though we won't worry about this for now. Let's create an array for our data:
+\begin{codeenv}
+       costheta_histo=[0.0 for _ in range(200)]
+\end{codeenv}
+This gives 200 bins. We could also add an option for number of  bins in our experiment run parameters, but for now we will keep things simple. We then edit our integrand constructor to take this vector as an item by adding a parameter \codeinline{histo}. Inside the integrand method, we can assign our generated phase space point to a set of variables to save the momenta 
+\begin{codeenv}
+    p_ep, p_em,p_d,p_db,p_g=ps_point
+\end{codeenv}
+We can then compute the angle between our quarks
+\begin{codeenv}
+    costhetaqq=p_d.space().dot(p_db.space())/(abs(p_d.space())*abs(p_db.space()))
+\end{codeenv}
+We would then like to assign this to a bin. To do so, we should round the angle down to an appropriate number based on the number of bins. Noting that \codeinline{int} casting in python is the same as taking the \codeinline{floor}, then
+\begin{codeenv}
+    bin_id=int((1+costhetaqq)/2*len(histo))
+\end{codeenv}
+Note that we also need to account for the weight, since we don't have unweighted events. We can save these weights with
+\begin{codeenv}
+            histo[bin_id][0]+=wgt
+\end{codeenv}
+
+
+\color{red}
+We want to plot $d\sigma/d\cos\theta$. Why? Usually, we integrate the  $d\cos\theta$ differential to give the inclusive cross section $\sigma_{tot}$. sigma=dphi3 M^2. dsigma/dcosthetaqq is the same but times a delta(costhetaqq$\phi$ cross section for a given cos theta. Integrating over all angles will give the total cross section. We can choose a phase space parametrisation with $\cos\theta$. This would give us exactly the curve we see in the lectures. But we would need to do this analytically. This may not necessarily be the case. So instead, we do discrete approximation. It will be a piecewise constant approximation, which we can easily integrate - it will literally just the Riemann sum, with $w_b$ weight for each bin $b$ to give $\sigma_{tot}$.
+
+
+consider no observavble: 0 bin. all wegihts go in one. weight should be cross. but, scales with energy. the estimator is sum over the sample I/N. Sum over the estimate. we add up weight in each bin, but should normalise by number in each bin.
+
+we lost vital information, number of events in each bin. we can add another entry to histo
+
+\begin{codeenv}
+        costheta_histo=[(0.0, 0) for _ in range(200)]
+\end{codeenv}
+and change 
+            \begin{codeenv}
+histo[bin_id][0]+=wgt
+histo[bin_id][1]+=1
+            \end{codeenv}
+\color{black}
