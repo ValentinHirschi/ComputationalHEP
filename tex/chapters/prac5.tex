@@ -1,0 +1,55 @@
+\section*{Practical 5: Computing the R Ratio, III - MadGraph Comparison }
+
+
+Why is it that we need both the theta cut and the gluon cut?
+\begin{equation}
+    \frac{1}{E_qE_{\bar{q}}(1-\cos\theta_{q\bar{q}})}
+\end{equation}
+Even at large momentum, we still have the collinear divergence, not just the soft divergence and vice versa.
+
+We would like to compare our previous results to MadGraph. Let's open it up and compute the process
+\begin{codeenv}
+    generate e+ e- > d d~ g / z
+display diagrams
+\end{codeenv}
+This is now in memory. We will output
+\begin{codeenv}
+    output CHEP_xcheck
+\end{codeenv}
+We now \codeinline{launch}
+1 param
+Note that all our parameters are in Python model. For example
+\begin{codeenv}
+   print(model.aS)
+\end{codeenv}
+etc. Can make sure same in 
+2 run card. 
+ True = fixed_ren_scale  ! if .true. use fixed ren scale
+     True = fixed_fac_scale  ! if .true. use fixed fac scale
+
+standard cuts, note transverse momentum is not beam axis momentum. Can fix these in ptj. This guarentees not soft, but may not fix collinear.
+
+etaj    ! max rap for the jets. 
+\begin{equation}
+    \arctan \theta
+\end{equation}
+The pt cut basically does our rapditiyy, no other useful info for our process - our beam axis.
+drjj 
+delta r angular sep between two jets. This is what forces away from colinear. IN our python, we have a deltaR for two lorentz vecs.
+instead of cos theta, compute rapidities, delta eta, then compute azimuthal angle delta phi. then delta R= \sqrt{\Delta \eta^2+\Delta\phi^2}
+
+much easier than computing costheta experimentally - boosts etc.
+0.4 is approx 10 deg of cos theta sep. if we remove this, then can see that we get a singular cross section. Indeed, the thing takes forever to run and each iteration is not within the prev. doesnt converge.
+
+we also have tge mg unweighted events.
+
+install MadAnalysis5
+
+can now 3 to enable.
+new option to specify the analysis to run
+
+can add for exmale something like COSTHETA(g[1],d[1])) 50 -1 1 [ logY ]
+
+can compare the histograms. can create same event fiel to use madanal on our event file when exporting our data.
+
+lets add DELTa R in python passcuts to specifty cuts in  the same way as MG.
