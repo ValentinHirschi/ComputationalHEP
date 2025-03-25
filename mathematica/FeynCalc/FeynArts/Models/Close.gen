@@ -1,3 +1,0 @@
-(* Patched for use with FeynCalc *)
-M$GenericCouplings = CloseKinematicVector/@ M$GenericCouplings
-
