@@ -1,4 +1,4 @@
-\section*{Practical 4: Computing the R Ratio, II - Angular Distribution }
+\section*{Practical 4: The Angular Distribution in Python }
 
 For this practical, your task will be to implement the remaining code to reproduce some results for the $e^+e^-\to q\bar{q}g$. Particularly, we would like to reproduce the real emission plot - the distribution of events with respect to angle. Recall that at leading order, with no gluon emission, we expect the relative angle between quarks to be $\pi$: they should scatter in opposite directions. As we introduce gluons if we allow gluons in our final state, the angle will be slightly reduced as the gluon will carry some of the momentum. As the gluon becomes soft, the angle will restore to $\pi$. We would like to see the exact distribution of angles after implementing a soft cut. 
 Create a new file for our experiment, \codeinline{rratio_differential.py}. We rename the function to \codeinline{rratio_differential}. In \codeinline{run.py}, add this experiment to the cases, as well as the appropriate code to the parser. We will also need to import the file so that \codeinline{run.py} knows where to find our code,
@@ -73,7 +73,7 @@ As mentioned at the beginning, the resulting distribution will depend on our glu
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\linewidth]{tex/ims/angular_dist.png}
-    \caption{Cross-section angular distribution for the 300MeV soft gluon cut.}
+    \caption{Cross-section angular distribution for the 300 GeV soft gluon cut.}
     \label{fig:enter-label}
 \end{figure}
 Observe that the distribution close to $\cos(\theta)=-1$ is quite well resolved, while at $\cos(\theta)=1$ the histogram is much more jagged and noisy. This is an artefact of our sampling: we generate far more points closer to $\theta=\pi$ and thus have better resolution.
