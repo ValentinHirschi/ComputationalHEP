@@ -4,6 +4,7 @@ from CHEP.experiments.epem_lplm_fixed_order_LO import epem_lplm_fixed_order_LO
 from CHEP.experiments.sampling_experiment import sampling_experiment
 from CHEP.experiments.rratio import rratio
 from CHEP.experiments.rratio_differential import rratio_differential
+from CHEP.experiments.rratio_subtracted import rratio_subtracted
 
 from CHEP.utils import logger, CHEPException, setup_logging
 
@@ -48,6 +49,18 @@ parser_rratio_differential_experiment.add_argument('--seed', '-s', type=int, def
 parser_rratio_differential_experiment.add_argument('--event_file', '-ef', type=str, default='rratio_differential_events.lhe.gz',
                                                    help='Specify the path to the event file to write into.')
 
+parser_rratio_subtracted_experiment = subparsers.add_parser(
+    'rratio_subtracted', help='Generate events and distributions for the subtracted R-ratio.')
+parser_rratio_subtracted_experiment.add_argument('--n_iterations', '-ni', type=int, default=10,
+                                                 help='Number of iterations to run')
+parser_rratio_subtracted_experiment.add_argument('--n_points_per_iteration', '-npi', type=int, default=1000,
+                                                 help='Number of points per iteration to consider ')
+parser_rratio_subtracted_experiment.add_argument('--seed', '-s', type=int, default=0,
+                                                 help='Random number generator seed')
+parser_rratio_subtracted_experiment.add_argument('--event_file', '-ef', type=str, default='rratio_subtracted_events.lhe.gz',
+                                                 help='Specify the path to the event file to write into.')
+
+
 parser_rratio_analyze_events_experiment = subparsers.add_parser(
     'rratio_analyze_events', help='Analyze madgraph events to compute differential R-ratio quantities.')
 parser_rratio_analyze_events_experiment.add_argument('--event_file', '-ef', type=str, default=None,
@@ -74,6 +87,9 @@ if __name__ == "__main__":
 
         case 'rratio_differential':
             rratio_differential(args)
+
+        case 'rratio_subtracted':
+            rratio_subtracted(args)
 
         case _:
             raise CHEPException(
