@@ -747,7 +747,7 @@ c        write(*,*) 'cosTheta(4,3)=',cos43
         THETACUT = 0.3d0
         EGCUT = 30.0d0
         if ((dabs(cos42) .gt. THETACUT) .and. (dabs(cos43) .gt. THETACUT) .and. (Eg .gt. EGCUT ) ) then
-           passcuts_pdgs=.true.
+           passcuts_pdgs=.false.
         endif
       endif
 
