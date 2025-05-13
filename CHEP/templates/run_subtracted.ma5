@@ -1,0 +1,34 @@
+# Uncomment the line below to skip this analysis altogether
+import ../models/sm
+import ./epem_ddxg_subtracted.lhe as CHEP
+import ./epem_ddxg_subtracted_MG5.lhe as MG5
+
+
+set main.graphic_render = matplotlib
+
+# Histogram drawer (options: matplotlib or root)
+set main.graphic_render = matplotlib
+set main.stacking_method = superimpose
+set CHEP.backcolor = none
+set MG5.backcolor = none
+
+#import /Users/vjhirsch/MG5/MG5_aMC_v3_5_7/models/sm
+#import /Users/vjhirsch/MG5/MG5_aMC_v3_5_7/CHEP_cross_check_epem_mupmum/Events/run_02/unweighted_events.lhe.gz as myevents
+
+# PT and ETA distributions of all particles
+plot  PT(d~[1]) 40 0  500 [logY]
+plot ETA(d~[1]) 40 -10 10 [logY]
+plot  PT(g[1]) 40 0  500 [logY]
+plot ETA(g[1]) 40 -10 10 [logY]
+plot  PT(d[1]) 40 0  500 [logY]
+plot ETA(d[1]) 40 -10 10 [logY]
+# Invariant-mass distributions
+plot M(d~[1] d[1]) 40 0  500 [logY ]
+plot M(d~[1] g[1]) 40 0  500 [logY ]
+plot M(d~[1] g[1] d[1]) 40 0  500 [logY ]
+plot M(g[1] d[1]) 40 0  500 [logY ]
+# Angular distributions
+plot THETA( g[1] ) 200 -1 1 [ logY ]
+!rm -rf epem_ddxg_subtracted_analysis
+submit epem_ddxg_subtracted_analysis
+open epem_ddxg_subtracted_analysis/Output/PDF/MadAnalysis5job_0

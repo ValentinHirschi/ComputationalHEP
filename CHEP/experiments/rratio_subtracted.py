@@ -14,8 +14,10 @@ GEV_TO_PB = 0.389379338e9
 UNIT_CONVERSION_FACTOR = GEV_TO_PB
 UNIT_CONVERSION_FACTOR = 1
 
-COSTHETA_CUT = None
-GLUON_ENERGY_CUT = None
+COSTHETA_CUT = 0.3
+GLUON_ENERGY_CUT = 30.0
+# COSTHETA_CUT = None
+# GLUON_ENERGY_CUT = None
 
 max_real = 0.
 
@@ -27,10 +29,9 @@ def pass_cuts(event):
         (pq, pqx, pg) = (event[1], event[2], event[3])
         cosThetaqg = pq.space().dot(pg.space())/(abs(pq.space())*abs(pg.space()))
         cosThetaqxg = pqx.space().dot(pg.space())/(abs(pqx.space())*abs(pg.space()))
-        if COSTHETA_CUT is not None and abs(1-cosThetaqg) > COSTHETA_CUT:
-            return False
-
-        if GLUON_ENERGY_CUT is not None and pg[0] > GLUON_ENERGY_CUT:
+        if (COSTHETA_CUT is not None and abs(cosThetaqxg) > COSTHETA_CUT) and \
+           (COSTHETA_CUT is not None and abs(cosThetaqg) > COSTHETA_CUT) and \
+           (GLUON_ENERGY_CUT is not None and pg[0] > GLUON_ENERGY_CUT):
             return False
     elif len(event) == 3:
         (pq, pqx) = (event[1], event[2])
@@ -118,6 +119,8 @@ def integrand(event_file: CHEPEvent, costheta_histogram, ps_generator, model, E_
         does_pass_s13_2_cut = pass_cuts(D13_2_kin)
         does_pass_s23_1_cut = pass_cuts(D23_1_kin)
 
+        first_event = True
+
         if does_pass_real_emission_cut:
             real_emission_matrix_element_evaluation = real_emission_process.smatrix(
                 ps_point, model)
@@ -143,6 +146,9 @@ def integrand(event_file: CHEPEvent, costheta_histogram, ps_generator, model, E_
                 CHEPParticle(event, LegState.FINAL, -1, p_dx[1], p_dx[2], p_dx[3], p_dx[0], mass=0.0),  # nopep8
                 CHEPParticle(event, LegState.FINAL, 21, p_g[1], p_g[2], p_g[3], p_g[0], mass=0.0),  # nopep8
             ])
+            if first_event:
+                event_file.write("<eventgroup>\n")
+                first_event = False
             event_file.write_events(event)
 
         else:
@@ -159,6 +165,22 @@ def integrand(event_file: CHEPEvent, costheta_histogram, ps_generator, model, E_
 
             I_V_wgt = born_wgt * ((4.0/3.0) * model.aS / math.pi)
 
+            # Add the Born weight
+            event = CHEPEvent()
+            event.nexternal = 3
+            event.wgt = born_wgt
+            event.aqed = 1
+            event.aqcd = 0
+            event.extend([
+                CHEPParticle(event, LegState.INITIAL, 23, p_gstar[1], p_gstar[2], p_gstar[3], p_gstar[0], mass=model.mdl_MZ),  # nopep8
+                CHEPParticle(event, LegState.FINAL, 1, D13_2_kin[1][1], D13_2_kin[1][2], D13_2_kin[1][3], D13_2_kin[1][0], mass=0.0),  # nopep8
+                CHEPParticle(event, LegState.FINAL, -1, D13_2_kin[2][1], D13_2_kin[2][2], D13_2_kin[2][3], D13_2_kin[2][0], mass=0.0),  # nopep8
+            ])
+            if first_event:
+                event_file.write("<eventgroup>\n")
+                first_event = False
+            event_file.write_events(event)
+
             # Add the counter event s13_2
             event = CHEPEvent()
             event.nexternal = 3
@@ -170,6 +192,9 @@ def integrand(event_file: CHEPEvent, costheta_histogram, ps_generator, model, E_
                 CHEPParticle(event, LegState.FINAL, 1, D13_2_kin[1][1], D13_2_kin[1][2], D13_2_kin[1][3], D13_2_kin[1][0], mass=0.0),  # nopep8
                 CHEPParticle(event, LegState.FINAL, -1, D13_2_kin[2][1], D13_2_kin[2][2], D13_2_kin[2][3], D13_2_kin[2][0], mass=0.0),  # nopep8
             ])
+            if first_event:
+                event_file.write("<eventgroup>\n")
+                first_event = False
             event_file.write_events(event)
         else:
             s13_2_wgt = 0.
@@ -190,9 +215,15 @@ def integrand(event_file: CHEPEvent, costheta_histogram, ps_generator, model, E_
                 CHEPParticle(event, LegState.FINAL, 1, D23_1_kin[1][1], D23_1_kin[1][2], D23_1_kin[1][3], D23_1_kin[1][0], mass=0.0),  # nopep8
                 CHEPParticle(event, LegState.FINAL, -1, D23_1_kin[2][1], D23_1_kin[2][2], D23_1_kin[2][3], D23_1_kin[2][0], mass=0.0),  # nopep8
             ])
+            if first_event:
+                event_file.write("<eventgroup>\n")
+                first_event = False
             event_file.write_events(event)
         else:
             s23_1_wgt = 0.
+
+        if not first_event:
+            event_file.write("</eventgroup>\n")
 
         # bin_id = int((1+cosThetaqq)/2*len(costheta_histogram))
         # costheta_histogram[bin_id][0] += wgt
@@ -215,7 +246,9 @@ def integrand(event_file: CHEPEvent, costheta_histogram, ps_generator, model, E_
         #     print("(s13_2_wgt+s23_1_wgt) / real_emission_wgt =",
         #           (s13_2_wgt+s23_1_wgt)/real_emission_wgt)
 
-        evaluations.append(real_emission_wgt + s13_2_wgt + s23_1_wgt + I_V_wgt)
+        final_wgt = born_wgt + real_emission_wgt + s13_2_wgt + s23_1_wgt + I_V_wgt
+        # final_wgt = born_wgt
+        evaluations.append(final_wgt)
         # evaluations.append(I_V_wgt)
         # evaluations.append(born_wgt)
 
@@ -247,7 +280,7 @@ def rratio_subtracted(args: argparse.Namespace):
     DISCRETE_LEARNING_RATE = 0.15
     CONTINUOUS_LEARNING_RATE = 0.15
 
-    event_file = CHEPEventFile("./epem_ddxg_r_minus_ct.lhe", mode='w')
+    event_file = CHEPEventFile("./epem_ddxg_subtracted.lhe", mode='w')
 
     costheta_histo = [[0.0, 0] for _ in range(200)]
     parallel_rngs = [RandomNumberGenerator(
