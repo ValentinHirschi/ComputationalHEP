@@ -13,7 +13,7 @@ import os
 root_path = os.path.dirname(__file__)
 default_lhapdf_python_dir = os.path.normpath(os.path.abspath(os.path.join(
     root_path, os.path.pardir, 'HEPTools', 'lhapdf6_py3', 'lib', 'python3.12', 'site-packages')))
-default_lhapdf_python_dir = "/Users/vjhirsch/HEP_programs/HEPTools/lhapdf6_py3/lib/python3.12/site-packages"
+#default_lhapdf_python_dir = "/Users/vjhirsch/HEP_programs/HEPTools/lhapdf6_py3/lib/python3.12/site-packages"
 
 default_lhapdf_pdfsets_dir = os.path.normpath(os.path.abspath(
     os.path.join(root_path, 'PDFsets')))
