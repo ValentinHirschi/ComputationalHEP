@@ -5,8 +5,18 @@ from CHEP.experiments.sampling_experiment import sampling_experiment
 from CHEP.experiments.rratio import rratio
 from CHEP.experiments.rratio_differential import rratio_differential
 from CHEP.experiments.rratio_subtracted import rratio_subtracted
+from CHEP.experiments.pp_wpwm_fixed_order_LO import pp_wpwm_fixed_order_LO
 
 from CHEP.utils import logger, CHEPException, setup_logging
+import os
+
+root_path = os.path.dirname(__file__)
+default_lhapdf_python_dir = os.path.normpath(os.path.abspath(os.path.join(
+    root_path, os.path.pardir, 'HEPTools', 'lhapdf6_py3', 'lib', 'python3.12', 'site-packages')))
+default_lhapdf_python_dir = "/Users/vjhirsch/HEP_programs/HEPTools/lhapdf6_py3/lib/python3.12/site-packages"
+
+default_lhapdf_pdfsets_dir = os.path.normpath(os.path.abspath(
+    os.path.join(root_path, 'PDFsets')))
 
 parser = argparse.ArgumentParser(prog='CHEP')
 subparsers = parser.add_subparsers(
@@ -22,6 +32,22 @@ parser_epem_lplm_fixed_order_LO.add_argument('--n_points_per_iteration', '-npi',
                                              help='Number of points per iteration to consider ')
 parser_epem_lplm_fixed_order_LO.add_argument('--seed', '-s', type=int, default=0,
                                              help='Random number generator seed')
+
+# Create the parser for the "pp_zz_fixed_order_LO" experiment
+parser_pp_wpwm_fixed_order_LO = subparsers.add_parser(
+    'pp_wpwm_fixed_order_LO', help='Running p p > z z at fixed-order.')
+parser_pp_wpwm_fixed_order_LO.add_argument('--n_iterations', '-ni', type=int, default=10,
+                                           help='Number of iterations to run')
+parser_pp_wpwm_fixed_order_LO.add_argument('--n_points_per_iteration', '-npi', type=int, default=1000,
+                                           help='Number of points per iteration to consider ')
+parser_pp_wpwm_fixed_order_LO.add_argument('--seed', '-s', type=int, default=0,
+                                           help='Random number generator seed')
+parser_pp_wpwm_fixed_order_LO.add_argument('--lhpadf_python_dir', type=str, default=default_lhapdf_python_dir,
+                                           help='Installation directory for the python3 LHAPDF module')
+parser_pp_wpwm_fixed_order_LO.add_argument('--lhpadf_pdfsets_dir', type=str, default=default_lhapdf_pdfsets_dir,
+                                           help='Directory containing PDF sets data')
+parser_pp_wpwm_fixed_order_LO.add_argument('--pdf_set', type=str, default='NNPDF23_nlo_as_0119',
+                                           help='Selected PDF set for the run')
 
 # Create the parser for the "sampling_experiment" experiment
 parser_sampling_experiment = subparsers.add_parser(
@@ -90,6 +116,9 @@ if __name__ == "__main__":
 
         case 'rratio_subtracted':
             rratio_subtracted(args)
+
+        case 'pp_wpwm_fixed_order_LO':
+            pp_wpwm_fixed_order_LO(args)
 
         case _:
             raise CHEPException(
