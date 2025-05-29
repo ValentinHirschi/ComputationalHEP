@@ -85,3 +85,55 @@ def pp_wpwm_fixed_order_LO(args: argparse.Namespace):
                 continuous_learning_rate=CONTINUOUS_LEARNING_RATE)  # type: ignore # nopep8
         logger.info(
             'Iteration {}: {:.6} +- {:.6}, chi={:.6}'.format(i_iteration, avg, err, chi_sq))
+
+
+def pdf_constraints_test(args: argparse.Namespace):
+
+    model = ModelParameters(None)
+
+    n_dimensions = 1
+
+    N_CORES = 1  # Parallelization not implemented yet
+    DISCRETE_LEARNING_RATE = 0.15
+    CONTINUOUS_LEARNING_RATE = 0.15
+
+    # Load PDF set
+    import sys
+    if args.lhpadf_python_dir not in sys.path:
+        sys.path.insert(0, args.lhpadf_python_dir)
+    import lhapdf
+    print(lhapdf.__file__)
+    lhapdf.pathsPrepend(args.lhpadf_pdfsets_dir)
+    pdf_hook = lhapdf.mkPDF(args.pdf_set, 0)
+
+    mu_f = model.mdl_MZ
+
+    # Momentum should add up to the proton momentum!
+
+    THRESHOLD = 0.00001
+    parallel_rngs = [RandomNumberGenerator(
+        seed=args.seed, stream_id=i_core) for i_core in range(N_CORES)]
+    integrator = NumericalIntegrator.continuous(n_dimensions)
+    for i_iteration in range(args.n_iterations):
+        samples = integrator.sample(
+            args.n_points_per_iteration, parallel_rngs[0])
+        res = [
+            (pdf_hook.xfxQ(1, max(s.c[0], THRESHOLD), mu_f) +
+             pdf_hook.xfxQ(-1, max(s.c[0], THRESHOLD), mu_f) +
+             pdf_hook.xfxQ(-2, max(s.c[0], THRESHOLD), mu_f) +
+             pdf_hook.xfxQ(2, max(s.c[0], THRESHOLD), mu_f) +
+             pdf_hook.xfxQ(-3, max(s.c[0], THRESHOLD), mu_f) +
+             pdf_hook.xfxQ(3, max(s.c[0], THRESHOLD), mu_f) +
+             pdf_hook.xfxQ(-4, max(s.c[0], THRESHOLD), mu_f) +
+             pdf_hook.xfxQ(4, max(s.c[0], THRESHOLD), mu_f) +
+             pdf_hook.xfxQ(-5, max(s.c[0], THRESHOLD), mu_f) +
+             pdf_hook.xfxQ(5, max(s.c[0], THRESHOLD), mu_f)
+             )
+            for s in samples
+        ]
+        integrator.add_training_samples(samples, res)
+        avg, err, chi_sq = integrator.update(
+                discrete_learning_rate=DISCRETE_LEARNING_RATE,
+                continuous_learning_rate=CONTINUOUS_LEARNING_RATE)  # type: ignore # nopep8
+        logger.info(
+            'Iteration {}: {:.6} +- {:.6}, chi={:.6}'.format(i_iteration, avg, err, chi_sq))

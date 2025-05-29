@@ -5,7 +5,7 @@ from CHEP.experiments.sampling_experiment import sampling_experiment
 from CHEP.experiments.rratio import rratio
 from CHEP.experiments.rratio_differential import rratio_differential
 from CHEP.experiments.rratio_subtracted import rratio_subtracted
-from CHEP.experiments.pp_wpwm_fixed_order_LO import pp_wpwm_fixed_order_LO
+from CHEP.experiments.pp_wpwm_fixed_order_LO import pp_wpwm_fixed_order_LO, pdf_constraints_test
 
 from CHEP.utils import logger, CHEPException, setup_logging
 import os
@@ -48,6 +48,21 @@ parser_pp_wpwm_fixed_order_LO.add_argument('--lhpadf_pdfsets_dir', type=str, def
                                            help='Directory containing PDF sets data')
 parser_pp_wpwm_fixed_order_LO.add_argument('--pdf_set', type=str, default='NNPDF23_nlo_as_0119',
                                            help='Selected PDF set for the run')
+
+parser_pdf_constraints_test = subparsers.add_parser(
+    'pdf_constraints_test', help='Testing baryon number and momentum conservation in PDFS.')
+parser_pdf_constraints_test.add_argument('--n_iterations', '-ni', type=int, default=10,
+                                         help='Number of iterations to run')
+parser_pdf_constraints_test.add_argument('--n_points_per_iteration', '-npi', type=int, default=1000,
+                                         help='Number of points per iteration to consider ')
+parser_pdf_constraints_test.add_argument('--seed', '-s', type=int, default=0,
+                                         help='Random number generator seed')
+parser_pdf_constraints_test.add_argument('--lhpadf_python_dir', type=str, default=default_lhapdf_python_dir,
+                                         help='Installation directory for the python3 LHAPDF module')
+parser_pdf_constraints_test.add_argument('--lhpadf_pdfsets_dir', type=str, default=default_lhapdf_pdfsets_dir,
+                                         help='Directory containing PDF sets data')
+parser_pdf_constraints_test.add_argument('--pdf_set', type=str, default='NNPDF23_nlo_as_0119',
+                                         help='Selected PDF set for the run')
 
 # Create the parser for the "sampling_experiment" experiment
 parser_sampling_experiment = subparsers.add_parser(
@@ -119,6 +134,9 @@ if __name__ == "__main__":
 
         case 'pp_wpwm_fixed_order_LO':
             pp_wpwm_fixed_order_LO(args)
+
+        case 'pdf_constraints_test':
+            pdf_constraints_test(args)
 
         case _:
             raise CHEPException(
