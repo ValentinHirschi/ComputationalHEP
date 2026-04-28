@@ -135,6 +135,118 @@ class Matrix_2_epem_epem_no_z(object):
         return matrix
 
 
+class Matrix_1_epem_ddx_no_z(object):
+
+    def __init__(self):
+        """define the object"""
+        self.clean()
+
+    def clean(self):
+        self.jamp = []
+
+    def get_external_masses(self, model):
+
+        return ((model.ZERO, model.ZERO), (model.ZERO, model.ZERO))
+
+    def smatrix(self, p, model):
+        #
+        # MadGraph-style standalone matrix element.
+        #
+        # Returns amplitude squared summed/avg over colors
+        # and helicities for:
+        #
+        # Process: e+ e- > d d~ WEIGHTED<=4 / z
+        #
+        self.clean()
+        #
+        # CONSTANTS
+        #
+        ndiags = 1
+        #
+        # LOCAL VARIABLES
+        #
+        helicities = [
+            [-1, 1, -1, 1],
+            [-1, 1, -1, -1],
+            [-1, 1, 1, 1],
+            [-1, 1, 1, -1],
+            [-1, -1, -1, 1],
+            [-1, -1, -1, -1],
+            [-1, -1, 1, 1],
+            [-1, -1, 1, -1],
+            [1, 1, -1, 1],
+            [1, 1, -1, -1],
+            [1, 1, 1, 1],
+            [1, 1, 1, -1],
+            [1, -1, -1, 1],
+            [1, -1, -1, -1],
+            [1, -1, 1, 1],
+            [1, -1, 1, -1],
+        ]
+        denominator = 4
+        # ----------
+        # BEGIN CODE
+        # ----------
+        self.amp2 = [0.] * ndiags
+        self.helEvals = []
+        ans = 0.
+        for hel in helicities:
+            t = self.matrix(p, hel, model)
+            ans = ans + t
+            self.helEvals.append([hel, t.real / denominator])
+        ans = ans / denominator
+        return ans.real
+
+    def matrix(self, p, hel, model):
+        #
+        # Returns amplitude squared summed/avg over colors
+        # for the point with external lines W(0:6,NEXTERNAL)
+        #
+        # Process: e+ e- > d d~ WEIGHTED<=4 / z
+        #
+        ngraphs = 1
+        nwavefuncs = 5
+        ncolor = 1
+        ZERO = 0.
+        #
+        # Color matrix: sum over the d d~ color line.
+        #
+        denom = [1]
+        cf = [[3]]
+        #
+        # Model parameters
+        #
+        GC_3 = model.GC_3
+        GC_1 = model.GC_1
+        # ----------
+        # Begin code
+        # ----------
+        amp = [None] * ngraphs
+        w = [None] * nwavefuncs
+        w[0] = oxxxxx(p[0], ZERO, hel[0], -1)
+        w[1] = ixxxxx(p[1], ZERO, hel[1], +1)
+        w[2] = oxxxxx(p[2], ZERO, hel[2], +1)
+        w[3] = ixxxxx(p[3], ZERO, hel[3], -1)
+        w[4] = FFV1P0_3(w[1], w[0], GC_3, ZERO, ZERO)
+        # Amplitude(s) for diagram number 1
+        amp[0] = FFV1_0(w[3], w[2], w[4], GC_1)
+
+        jamp = [None] * ncolor
+
+        jamp[0] = -amp[0]
+
+        self.amp2[0] += abs(amp[0]*amp[0].conjugate())
+        matrix = 0.
+        for i in range(ncolor):
+            ztemp = 0
+            for j in range(ncolor):
+                ztemp = ztemp + cf[i][j]*jamp[j]
+            matrix = matrix + ztemp * jamp[i].conjugate()/denom[i]
+        self.jamp.append(jamp)
+
+        return matrix
+
+
 class Matrix_3_epem_ddxg_no_z(object):
 
     def __init__(self):

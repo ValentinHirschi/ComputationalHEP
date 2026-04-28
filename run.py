@@ -6,6 +6,7 @@ from CHEP.experiments.rratio import rratio
 from CHEP.experiments.rratio_differential import rratio_differential
 from CHEP.experiments.rratio_subtracted import rratio_subtracted
 from CHEP.experiments.pp_wpwm_fixed_order_LO import pp_wpwm_fixed_order_LO, pdf_constraints_test
+from CHEP.experiments.shower import shower
 
 from CHEP.utils import logger, CHEPException, setup_logging
 import os
@@ -101,6 +102,34 @@ parser_rratio_subtracted_experiment.add_argument('--seed', '-s', type=int, defau
 parser_rratio_subtracted_experiment.add_argument('--event_file', '-ef', type=str, default='rratio_subtracted_events.lhe.gz',
                                                  help='Specify the path to the event file to write into.')
 
+parser_shower_experiment = subparsers.add_parser(
+    'shower', help='Generate fixed-order e+e- events and run the pedagogical final-state shower.')
+parser_shower_experiment.add_argument(
+    'shower_process', choices=('epem_a_ddx', 'epem_a_ddxg'),
+    help='Hard process to generate before showering.')
+parser_shower_experiment.add_argument('--n_iterations', '-ni', type=int, default=10,
+                                      help='Number of iterations to run')
+parser_shower_experiment.add_argument('--n_points_per_iteration', '-npi', type=int, default=1000,
+                                      help='Number of points per iteration to consider')
+parser_shower_experiment.add_argument('--seed', '-s', type=int, default=0,
+                                      help='Random number generator seed')
+parser_shower_experiment.add_argument('--e_cm', type=float, default=1000.0,
+                                      help='Center-of-mass energy in GeV')
+parser_shower_experiment.add_argument('--shower_scale', type=float, default=1.0,
+                                      help='Shower cutoff scale in GeV')
+parser_shower_experiment.add_argument('--event_file', '-ef', type=str, default=None,
+                                      help='Path to the fixed-order LHE file to write')
+parser_shower_experiment.add_argument('--showered_event_file', '-sef', type=str, default=None,
+                                      help='Path to the showered LHE file to write')
+parser_shower_experiment.add_argument('--histogram_prefix', type=str, default=None,
+                                      help='Prefix for the theta(j2,j3) histogram files')
+parser_shower_experiment.add_argument('--n_bins', type=int, default=80,
+                                      help='Number of histogram bins')
+parser_shower_experiment.add_argument('--n_cores', '--n_core', dest='n_cores', type=int, default=1,
+                                      help='Number of cores to use. Step shower mode forces this to 1.')
+parser_shower_experiment.add_argument('--step_shower', action='store_true',
+                                      help='Pause before each accepted shower emission and print the generated kinematics')
+
 
 parser_rratio_analyze_events_experiment = subparsers.add_parser(
     'rratio_analyze_events', help='Analyze madgraph events to compute differential R-ratio quantities.')
@@ -131,6 +160,9 @@ if __name__ == "__main__":
 
         case 'rratio_subtracted':
             rratio_subtracted(args)
+
+        case 'shower':
+            shower(args)
 
         case 'pp_wpwm_fixed_order_LO':
             pp_wpwm_fixed_order_LO(args)

@@ -37,7 +37,7 @@ class LegState(Enum):
 
 class CHEPParticle(Particle):
     def __init__(self, event: CHEPEvent, status: LegState, pid: int, px: float, py: float, pz: float, E: float, mass: float, color1: int = 0, color2: int | None = 0):
-        super().__init__(event)
+        super().__init__(event=event)
         self.pid = pid
         self.color1 = color1
         self.color2 = color2
