@@ -1,0 +1,390 @@
+\documentclass[11pt]{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{listings}
+
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\pp}{\mathrm{p}}
+\newcommand{\qqbar}{q\bar q}
+\newcommand{\mll}{m_{\ell\ell}}
+\newcommand{\shat}{\hat s}
+\newcommand{\ecm}{E_{\mathrm{cm}}}
+\newcommand{\mZ}{m_Z}
+\newcommand{\sw}{s_w}
+\newcommand{\cw}{c_w}
+\newcommand{\pb}{\mathrm{pb}}
+
+\title{The \texttt{drell\_yan\_lo} Numerical Experiment}
+\author{Computational HEP}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Purpose of the experiment}
+
+This numerical experiment computes a deliberately simple version of
+Drell--Yan production at a proton--proton collider:
+\[
+  \pp\pp \to Z \to \ell^+\ell^- .
+\]
+The implementation is intentionally pedagogical.  It does not try to be a
+precision Drell--Yan prediction.  Instead, it is designed to expose the three
+main ingredients that appear in almost every hadron-collider calculation:
+\begin{enumerate}
+  \item the proton is not an elementary particle, so the incoming hard partons
+        carry only fractions \(x_1\) and \(x_2\) of the proton momenta;
+  \item the probability densities for finding those partons are the PDFs;
+  \item the short-distance partonic reaction is simple and calculable.
+\end{enumerate}
+In this experiment the hard reaction is
+\[
+  q \bar q \to Z ,
+\]
+and the decay \(Z \to \ell^+\ell^-\) is included only through a branching-ratio
+factor.  Therefore the final state is treated as an on-shell object with mass
+\(\mll\), not as two resolved leptons with an angular distribution.  This is why
+the phase space is a \(2\to1\) phase space.
+
+\section{Hadron-collider kinematics}
+
+Let the two proton beams have centre-of-mass energy \(\ecm\).  The proton
+momenta are taken to be massless:
+\[
+  P_1^\mu = \frac{\ecm}{2}(1,0,0,+1), \qquad
+  P_2^\mu = \frac{\ecm}{2}(1,0,0,-1).
+\]
+The hard collision is not between the two full protons.  It is between two
+partons inside the protons.  If the parton from proton 1 carries momentum
+fraction \(x_1\), and the parton from proton 2 carries momentum fraction
+\(x_2\), then
+\[
+  p_1^\mu = x_1 P_1^\mu, \qquad p_2^\mu = x_2 P_2^\mu .
+\]
+The partonic centre-of-mass energy is
+\[
+  \shat = (p_1+p_2)^2 = x_1 x_2 \ecm^2 .
+\]
+
+For a \(2\to1\) reaction producing a final-state object of mass \(\mll\), the
+partonic energy is fixed:
+\[
+  \shat = \mll^2 .
+\]
+It is useful to define
+\[
+  \tau = x_1 x_2 = \frac{\mll^2}{\ecm^2}.
+\]
+The longitudinal boost of the partonic collision is described by the rapidity
+of the produced object,
+\[
+  y = \frac{1}{2}\log\frac{x_1}{x_2}.
+\]
+Solving these two equations gives
+\[
+  x_1 = \sqrt{\tau}\,e^{+y}, \qquad
+  x_2 = \sqrt{\tau}\,e^{-y}.
+\]
+Because \(0<x_1<1\) and \(0<x_2<1\), the rapidity is bounded:
+\[
+  -\log\frac{\ecm}{\mll}
+  \le y \le
+  +\log\frac{\ecm}{\mll}.
+\]
+The code does not rederive this mapping itself.  It uses the existing
+\texttt{FlatPhaseSpace} generator in \(2\to1\) proton-proton mode:
+\[
+  \texttt{FlatPhaseSpace([0,0], [m\_ll], beam\_types=(1,1))}.
+\]
+For a \(2\to1\) final state this generator fixes \(\tau=\mll^2/\ecm^2\), samples
+only the rapidity variable, and returns \(x_1\), \(x_2\), and the Jacobian.
+This is important: the Drell--Yan experiment is not manually inventing a
+Bjorken-\(x\) mapping.  It is using the same phase-space machinery as the other
+hadron-collider experiments.
+
+\section{PDFs and partonic luminosities}
+
+A PDF \(f_i(x,\mu_F)\) answers the following question:
+\begin{quote}
+  At factorisation scale \(\mu_F\), how likely is it to find a parton of type
+  \(i\) carrying a fraction \(x\) of the proton momentum?
+\end{quote}
+The index \(i\) can be a gluon, a quark, or an antiquark.  In Drell--Yan at
+leading order, only quark--antiquark initial states contribute:
+\[
+  q\bar q \to Z .
+\]
+For a proton-proton collider, either beam can provide the quark and the other
+beam can provide the antiquark.  Therefore, for each quark flavour \(q\), the
+partonic luminosity is the sum of two beam assignments:
+\[
+  \mathcal{L}_{q\bar q}(x_1,x_2,\mu_F)
+  =
+  f_q(x_1,\mu_F) f_{\bar q}(x_2,\mu_F)
+  +
+  f_{\bar q}(x_1,\mu_F) f_q(x_2,\mu_F).
+\]
+The code keeps these two terms separately in the output table, because it is
+instructive to see that they are generally not equal away from \(y=0\).
+At positive rapidity, \(x_1>x_2\); at negative rapidity, \(x_2>x_1\).  Since
+quark and antiquark PDFs are different functions, the two beam assignments
+probe different regions of the proton structure.
+
+LHAPDF returns \(x f_i(x,\mu_F)\), not \(f_i(x,\mu_F)\).  The experiment
+therefore converts it back by dividing by \(x\):
+\[
+  f_i(x,\mu_F) = \frac{x f_i(x,\mu_F)}{x}.
+\]
+This division is explicit in the code because it is one of the easiest places
+to make a factor-of-\(x\) mistake.
+
+\section{The \(Z\)-boson couplings}
+
+The neutral-current \(Z f\bar f\) vertex is written in the convention
+\[
+  i\frac{e}{2\sw\cw}\gamma^\mu(v_f-a_f\gamma_5).
+\]
+Here \(e\) is the electromagnetic coupling, and
+\[
+  \sw = \sin\theta_w, \qquad \cw=\cos\theta_w
+\]
+are the sine and cosine of the weak mixing angle.  The dimensionless vector
+and axial couplings are
+\[
+  v_f = T^3_f - 2 Q_f \sw^2,
+  \qquad
+  a_f = T^3_f .
+\]
+\(Q_f\) is the electric charge in units of the proton charge.  \(T^3_f\) is the
+third component of weak isospin.  For example,
+\[
+  (Q_u,T^3_u)=\left(+\frac{2}{3},+\frac{1}{2}\right),
+  \qquad
+  (Q_d,T^3_d)=\left(-\frac{1}{3},-\frac{1}{2}\right).
+\]
+The code stores these charge and isospin assignments for \(d,u,s,c,b\) quarks.
+For a chosen flavour \(q\), it computes \(v_q\) and \(a_q\), and then weights the
+channel by \(v_q^2+a_q^2\).
+
+\section{The hard matrix element}
+
+The partonic process is
+\[
+  q(p_1) + \bar q(p_2) \to Z(k),
+  \qquad k^2=\mll^2 .
+\]
+The amplitude is
+\[
+  \mathcal{M}
+  =
+  \bar v(p_2)
+  \left[
+    i\frac{e}{2\sw\cw}\gamma^\mu(v_q-a_q\gamma_5)
+    \right]
+  u(p_1)\,
+  \epsilon_\mu^*(k).
+\]
+The experiment uses the spin- and colour-averaged squared matrix element
+\[
+  \overline{|\mathcal{M}|^2}
+  =
+  \frac{g_Z^2\,\shat}{12}\left(v_q^2+a_q^2\right),
+  \qquad
+  g_Z = \frac{e}{\sw\cw}.
+\]
+Let us unpack this formula.
+\begin{itemize}
+  \item The bar over \(|\mathcal{M}|^2\) means that we average over the
+        unobserved spin and colour states of the incoming quark and antiquark.
+  \item The factor \(1/4\) from spin averaging is already included.
+  \item The factor \(1/3\) from colour averaging is already included.  The
+        final \(Z\) is colourless, so only a colour-singlet quark-antiquark
+        combination contributes.
+  \item The interference between vector and axial terms vanishes after the
+        spin sum for this fully inclusive \(2\to1\) production rate.
+\end{itemize}
+This is what is meant by ``the LO matrix element is trivial'' in this numerical
+experiment: the code does not call a generated matrix-element library.  It uses
+this one analytic expression directly.
+
+\section{The \(2\to1\) partonic cross section}
+
+For a \(2\to1\) process, the partonic cross section contains a delta function
+that enforces the on-shell condition:
+\[
+  \dd \hat\sigma_q
+  =
+  \frac{\pi}{\shat}
+  \overline{|\mathcal{M}_q|^2}
+  \delta(\shat-\mll^2).
+\]
+This expression is compact, so it is worth saying what it means.
+The incoming partons can have many possible \(x_1,x_2\), but only combinations
+with
+\[
+  x_1 x_2 \ecm^2 = \mll^2
+\]
+can produce an on-shell object of mass \(\mll\).  The delta function removes
+one integration variable.  In the code, the phase-space generator handles this
+for us.  In its \(2\to1\) mode it fixes \(\tau=\mll^2/\ecm^2\) and leaves only
+the rapidity integral.
+
+The hadronic cross section in this approximation is therefore
+\[
+  \sigma(\pp\pp\to Z\to\ell^+\ell^-)
+  =
+  \sum_q
+  \int \dd x_1\,\dd x_2\,
+  \mathcal{L}_{q\bar q}(x_1,x_2,\mu_F)\,
+  \frac{\pi}{\shat}
+  \overline{|\mathcal{M}_q|^2}
+  \delta(\shat-\mll^2)\,
+  \mathrm{BR}(Z\to\ell^+\ell^-).
+\]
+Equivalently, after using \(\tau\) and \(y\),
+\[
+  \sigma
+  =
+  \sum_q
+  \int_{-Y}^{+Y}\dd y\,
+  \frac{1}{\ecm^2}\,
+  \mathcal{L}_{q\bar q}(x_1(y),x_2(y),\mu_F)\,
+  \pi\,
+  \frac{\overline{|\mathcal{M}_q|^2}}{\mll^2}\,
+  \mathrm{BR}(Z\to\ell^+\ell^-),
+\]
+where
+\[
+  Y = \log\frac{\ecm}{\mll}.
+\]
+The factor \(1/\ecm^2\) is the Jacobian from the delta function
+\(\delta(x_1x_2\ecm^2-\mll^2)\).  In the code this is part of the
+\texttt{FlatPhaseSpace} Jacobian.
+
+\section{The branching ratio}
+
+By default the experiment returns a cross section for
+\[
+  \pp\pp\to Z\to \ell^+\ell^- .
+\]
+The branching ratio is estimated at tree level.  For one charged lepton flavour,
+\[
+  \Gamma(Z\to\ell^+\ell^-)
+  =
+  \frac{G_F\mZ^3}{6\sqrt{2}\pi}
+  \left(v_\ell^2+a_\ell^2\right),
+\]
+and
+\[
+  \mathrm{BR}(Z\to\ell^+\ell^-)
+  =
+  \frac{\Gamma(Z\to\ell^+\ell^-)}{\Gamma_Z}.
+\]
+Here \(\Gamma_Z\) is taken from the model parameters.  If one wants inclusive
+on-shell \(Z\) production rather than a charged-lepton final state, one can run
+with
+\[
+  \texttt{--branching\_ratio 1}.
+\]
+
+\section{Monte Carlo integration}
+
+The integrator samples a point \(u\in[0,1]\).  The phase-space generator maps
+this to a rapidity
+\[
+  y(u)= -Y + 2Yu,
+\]
+and then to
+\[
+  x_1(u)=\sqrt{\tau}\,e^{y(u)}, \qquad
+  x_2(u)=\sqrt{\tau}\,e^{-y(u)}.
+\]
+At that point the code computes
+\[
+  w(u)
+  =
+  J(u)
+  \sum_q
+  \left[
+    f_q(x_1,\mu_F)f_{\bar q}(x_2,\mu_F)
+    +
+    f_{\bar q}(x_1,\mu_F)f_q(x_2,\mu_F)
+    \right]
+  \pi
+  \frac{\overline{|\mathcal{M}_q|^2}}{\mll^2}
+  \mathrm{BR}(Z\to\ell^+\ell^-),
+\]
+where \(J(u)\) is the phase-space/Bjorken-\(x\) Jacobian returned by the
+generator.  The unit conversion
+\[
+  1~\mathrm{GeV}^{-2} = 0.389379338\times 10^9~\pb
+\]
+is applied at the end.
+
+The integral over \(u\) gives the total cross section:
+\[
+  \sigma = \int_0^1 \dd u\, w(u).
+\]
+The numerical integrator reports an estimate and an integration error after
+each iteration.
+
+\section{Rapidity distribution}
+
+In addition to the Monte Carlo integral, the experiment writes a simple
+rapidity table.  This table is evaluated deterministically at bin centres.
+Since the generator weight is a weight per unit \(u\), and
+\[
+  \dd y = 2Y\,\dd u,
+\]
+the code divides by the rapidity range \(2Y\) to obtain
+\[
+  \frac{\dd\sigma}{\dd y}.
+\]
+The output files are
+\[
+  \texttt{drell\_yan\_lo\_rapidity.csv},
+  \qquad
+  \texttt{drell\_yan\_lo\_rapidity.png}.
+\]
+The CSV table also includes separate channel contributions such as
+\(\texttt{u qbar}\) and \(\texttt{ubar q}\).  These labels indicate which beam
+provided the quark and which beam provided the antiquark.
+
+\section{Example commands}
+
+A default run near the \(Z\) pole is
+\begin{lstlisting}[language=bash]
+./run.py drell_yan_lo -ni 10 -npi 1000 \
+  --e_cm 13000 \
+  --quark_flavours d,u,s,c \
+  --lepton mu \
+  --output_dir drell_yan_lo_output
+\end{lstlisting}
+For inclusive on-shell \(Z\) production, omit the branching-ratio suppression:
+\begin{lstlisting}[language=bash]
+./run.py drell_yan_lo -ni 10 -npi 1000 \
+  --branching_ratio 1 \
+  --output_dir drell_yan_lo_inclusive
+\end{lstlisting}
+
+\section{What is deliberately not included}
+
+This experiment is intentionally minimal.  The following physics effects are
+not included:
+\begin{itemize}
+  \item photon exchange, \(\gamma^*\to\ell^+\ell^-\);
+  \item \(\gamma\)-\(Z\) interference;
+  \item the finite-width Breit-Wigner line shape of the \(Z\);
+  \item the explicit two-lepton decay angles;
+  \item QCD radiation such as \(q\bar q\to Zg\) or \(qg\to Zq\);
+  \item virtual loop corrections;
+  \item detector cuts on the charged leptons.
+\end{itemize}
+These omissions are not accidents.  The purpose of the experiment is to show,
+as cleanly as possible, how a hadron-collider observable is built from
+partonic luminosities and a hard matrix element.
+
+\end{document}
